@@ -3,6 +3,18 @@ on:
   push:
     branches:
       - main
+
+env:
+  MANIFEST_LOCAL_PUBLIC_KEY: ${{ secrets.MANIFEST_LOCAL_PUBLIC_KEY }}
+  MANIFEST_OAUTH2_CLIENT_ID: ${{ secrets.MANIFEST_OAUTH2_CLIENT_ID }}
+  REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+  REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+  REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+  REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+  REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+  REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,7 +26,7 @@ jobs:
       - run: yarn && cd example && yarn
       - run: yarn build:prd && cd example && yarn build
       - run: rm -rf dist/hands-up/esm && mv dist hands-up && zip -r hands-up.zip hands-up
-      - run: ls -la && env
+      - run: ls -la
       - name: Deploy example
         uses: peaceiris/actions-gh-pages@v3
         with:
