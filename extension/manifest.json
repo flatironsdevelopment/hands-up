@@ -1,0 +1,20 @@
+{
+  "name": "Hands Up!",
+  "description": "Hands Up!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["/hands-up/initializer.js"]
+    }
+  ],
+  "permissions": ["identity", "identity.email"],
+  "oauth2": {
+    "client_id": "MANIFEST_OAUTH2_CLIENT_ID",
+    "scopes": ["profile", "https://www.googleapis.com/auth/userinfo.profile"]
+  }
+}
