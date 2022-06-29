@@ -65,7 +65,7 @@ export async function authenticate(): Promise<User> {
   const localUser = getLocalUser()
   if (localUser) return localUser
 
-  if (window['chrome'].runtime) {
+  if (process.env.REACT_APP_CHROME_EXTENSION) {
     return new Promise((resolve) => {
       window['chrome'].runtime.sendMessage('authenticate', (user) => {
         if (user) resolve(setLocalUser(user))
