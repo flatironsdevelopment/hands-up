@@ -1,0 +1,17 @@
+name: Release Package
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - run: yarn && cd example && yarn
+      - run: yarn build:prd && cd example && yarn build:example
+      - run: rm -rf dist/hands-up/esm && mv dist hands-up && zip -r hands-up.zip hands-up
+      - run: ls -la && env
