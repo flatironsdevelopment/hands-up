@@ -30,7 +30,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: hands-up.zip
+          name: hands-up
           path: hands-up.zip
       - name: Deploy example
         uses: peaceiris/actions-gh-pages@v3
