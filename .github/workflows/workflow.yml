@@ -12,6 +12,6 @@ jobs:
         with:
           node-version: '14.x'
       - run: yarn && cd example && yarn
-      - run: yarn build:prd && cd example && yarn build:example
+      - run: yarn build:prd && cd example && yarn build
       - run: rm -rf dist/hands-up/esm && mv dist hands-up && zip -r hands-up.zip hands-up
       - run: ls -la && env
