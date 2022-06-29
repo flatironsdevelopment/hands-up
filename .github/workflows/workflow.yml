@@ -15,3 +15,9 @@ jobs:
       - run: yarn build:prd && cd example && yarn build
       - run: rm -rf dist/hands-up/esm && mv dist hands-up && zip -r hands-up.zip hands-up
       - run: ls -la && env
+      - name: Deploy example
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./example/build
+          publish_branch: gh-pages
