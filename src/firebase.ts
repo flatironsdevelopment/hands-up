@@ -64,8 +64,9 @@ export async function devAuthenticate() {
 export async function authenticate(): Promise<User> {
   const localUser = getLocalUser()
   if (localUser) return localUser
+  const isOnMeet = window.location.host.indexOf('meet') > -1
 
-  if (process.env.REACT_APP_CHROME_EXTENSION) {
+  if (isOnMeet) {
     return new Promise((resolve) => {
       window['chrome'].runtime.sendMessage('authenticate', (user) => {
         if (user) resolve(setLocalUser(user))

@@ -7,9 +7,7 @@ require('dotenv').config({ path: '.env' })
 const production = process.env.NODE_ENV === 'production' || false
 const outputDir = path.resolve(__dirname, 'dist')
 
-const defineEnv = {
-  REACT_APP_CHROME_EXTENSION: true
-}
+const defineEnv = {}
 Object.keys(process.env)
   .filter((k) => k.indexOf('REACT_AP') > -1)
   .map((k) => (defineEnv[`process.env.${k}`] = JSON.stringify(process.env[k])))
