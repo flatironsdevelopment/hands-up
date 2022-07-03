@@ -18,10 +18,8 @@ import {
   authenticate,
   listenDisconnect
 } from '../../firebase'
-import Snackbar from '@mui/material/Snackbar'
-import Alert from '@mui/material/Alert'
 import { MeetSnapshot, User } from 'types'
-import { useAlert } from '../Alert'
+import { AlertState, useAlert } from '../Alert'
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -46,19 +44,26 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-const checkNewHands = (
+const newHandsAlert = (
   currentState: MeetSnapshot,
   newState: MeetSnapshot,
   userId: string
-) => {
-  const news = {}
-  Object.keys(newState).forEach((newKey) => {
-    const isHandDown = !currentState[newKey] || !currentState[newKey].isHandUp
-    const showAlert =
-      isHandDown && newState[newKey].id !== userId && newState[newKey].isHandUp
-    if (showAlert) news[newKey] = newState[newKey]
+): AlertState => {
+  const alertState = {}
+  Object.keys(newState).forEach((key) => {
+    const currItem = currentState[key]
+    const newItem = newState[key]
+    const isHandDown = !currItem || !currItem.isHandUp
+    const isCurrentUser = newItem.id === userId
+    const shouldShowAlert = isHandDown && !isCurrentUser && newItem.isHandUp
+    if (shouldShowAlert) {
+      alertState[key] = {
+        message: `${newItem.name} raised his hand`,
+        severity: 'info'
+      }
+    }
   })
-  return news
+  return alertState
 }
 
 export const HandsUp = ({ meetId }) => {
@@ -71,11 +76,10 @@ export const HandsUp = ({ meetId }) => {
   const userRef = useRef<User>()
 
   const [state, setState] = useState<MeetSnapshot>({})
-  const [newHandsUpAlert, setNewHandsUpAlert] = useState<MeetSnapshot>({})
-
   const currentHandsState = useRef<MeetSnapshot>({})
+
   const isInitializedRef = useRef<boolean>(false)
-  const { showAlert } = useAlert()
+  const { showAlert, showMultipleAlerts } = useAlert()
 
   const authSuccess = useCallback((user: User) => {
     userRef.current = user
@@ -127,10 +131,11 @@ export const HandsUp = ({ meetId }) => {
 
   const handleNewHands = useCallback((state) => {
     const userId = userRef.current?.id
-    const newHands = checkNewHands(currentHandsState.current, state, userId)
-    setNewHandsUpAlert((hands) => ({ ...hands, ...newHands }))
-    setState(state)
-    currentHandsState.current = { ...currentHandsState.current, ...state }
+    const newHands = newHandsAlert(currentHandsState.current, state, userId)
+    const newState = { ...currentHandsState.current, ...state }
+    currentHandsState.current = newState
+    setState(newState)
+    showMultipleAlerts(newHands)
   }, [])
 
   useEffect(() => {
@@ -140,28 +145,6 @@ export const HandsUp = ({ meetId }) => {
     }
     return getHandsUp(meetId, (hands) => handleNewHands(hands ? hands : {}))
   }, [meetId, handleNewHands])
-
-  function renderNewHandUpAlert(key) {
-    const state = newHandsUpAlert[key]
-    const close = () => {
-      const newState = { ...newHandsUpAlert }
-      delete newState[key]
-      setNewHandsUpAlert(newState)
-    }
-    return (
-      <Snackbar
-        key={key}
-        open={!!state}
-        onClose={close}
-        autoHideDuration={3000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={close} severity={'info'}>
-          {state.name} raised his hand
-        </Alert>
-      </Snackbar>
-    )
-  }
 
   return (
     <Fragment>
@@ -198,7 +181,6 @@ export const HandsUp = ({ meetId }) => {
           <HandsUpList state={state} />
         </div>
       )}
-      {Object.keys(newHandsUpAlert).map(renderNewHandUpAlert)}
     </Fragment>
   )
 }
