@@ -5,21 +5,21 @@ import React, {
   useRef,
   useState
 } from 'react'
-import ListIcon from '@material-ui/icons/List'
-import PanToolIcon from '@material-ui/icons/PanTool'
-import CloseIcon from '@material-ui/icons/Close'
-import Fab from '@material-ui/core/Fab'
+import ListIcon from '@mui/icons-material/List'
+import PanToolIcon from '@mui/icons-material/PanTool'
+import CloseIcon from '@mui/icons-material/Close'
+import Fab from '@mui/material/Fab'
+import Tooltip from '@mui/material/Tooltip'
+import { makeStyles } from '@mui/styles'
 import { HandsUpList } from '../HandsUpList/HandsUpList'
-import { makeStyles, Tooltip } from '@material-ui/core'
 import {
   getHandsUp,
   setHandsUp,
   authenticate,
-  getLocalUser,
   listenDisconnect
 } from '../../firebase'
-import Snackbar from '@material-ui/core/Snackbar'
-import { Alert } from '@material-ui/lab'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import { MeetSnapshot, User } from 'types'
 
 const useStyles = makeStyles(() => ({
