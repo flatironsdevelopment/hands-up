@@ -21,20 +21,12 @@ import {
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import { MeetSnapshot, User } from 'types'
+import { useAlert } from '../Alert'
 
 const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'fixed',
-    bottom: 120,
-    right: 30,
-    zIndex: 1000
-  },
   button: {
-    marginTop: 15,
-    marginRight: 10,
+    marginTop: '15px !important',
+    marginRight: '10px !important',
     zIndex: 1
   },
   list: {
@@ -81,17 +73,14 @@ export const HandsUp = ({ meetId }) => {
   const [state, setState] = useState<MeetSnapshot>({})
   const [newHandsUpAlert, setNewHandsUpAlert] = useState<MeetSnapshot>({})
 
-  const [alertSate, setAlertState] = useState<{
-    severity: 'success' | 'error'
-    message: string
-  }>(null)
   const currentHandsState = useRef<MeetSnapshot>({})
   const isInitializedRef = useRef<boolean>(false)
+  const { showAlert } = useAlert()
 
   const authSuccess = useCallback((user: User) => {
     userRef.current = user
     listenDisconnect(meetId, user)
-    setAlertState({
+    showAlert({
       severity: 'success',
       message: `Welcome ${user.name}!`
     })
@@ -99,7 +88,7 @@ export const HandsUp = ({ meetId }) => {
 
   const authError = useCallback(() => {
     userRef.current = null
-    setAlertState({
+    showAlert({
       severity: 'error',
       message: 'Fail to authenticate.'
     })
@@ -174,63 +163,42 @@ export const HandsUp = ({ meetId }) => {
     )
   }
 
-  function renderAlert() {
-    return (
-      <Snackbar
-        open={!!alertSate}
-        autoHideDuration={3000}
-        onClose={() => setAlertState(null)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        {alertSate ? (
-          <Alert
-            onClose={() => setAlertState(null)}
-            severity={alertSate.severity}
-          >
-            {alertSate.message}
-          </Alert>
-        ) : null}
-      </Snackbar>
-    )
-  }
-
   return (
     <Fragment>
       {isOpen && (
         <div onClick={() => setIsOpen(false)} className={style.backdrop} />
       )}
-      <div className={style.root}>
-        <Tooltip
-          open={isHandUp || isTooltipOpen}
-          title={isHandUp ? 'Lower hand' : 'Raise hand'}
-          onClose={() => setIsTooltipOpen(false)}
-          onOpen={() => setIsTooltipOpen(true)}
+      <Tooltip
+        open={isHandUp || isTooltipOpen}
+        title={isHandUp ? 'Lower hand' : 'Raise hand'}
+        onClose={() => setIsTooltipOpen(false)}
+        onOpen={() => setIsTooltipOpen(true)}
+      >
+        <Fab
+          className={style.button}
+          color='primary'
+          aria-label='hands up'
+          onClick={raiseHand}
         >
-          <Fab
-            className={style.button}
-            color='primary'
-            aria-label='hands up'
-            onClick={raiseHand}
-          >
-            {isHandUp ? <CloseIcon /> : <PanToolIcon />}
-          </Fab>
-        </Tooltip>
-        <Tooltip title='Raised hands'>
-          <Fab
-            className={style.button}
-            color='primary'
-            aria-label='show'
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <ListIcon />
-          </Fab>
-        </Tooltip>
-      </div>
-      <div className={style.list}>
-        {isOpen && <HandsUpList state={state} />}
-      </div>
+          {isHandUp ? <CloseIcon /> : <PanToolIcon />}
+        </Fab>
+      </Tooltip>
+      <Tooltip title='Raised hands'>
+        <Fab
+          className={style.button}
+          color='primary'
+          aria-label='show'
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <ListIcon />
+        </Fab>
+      </Tooltip>
+      {isOpen && (
+        <div className={style.list}>
+          <HandsUpList state={state} />
+        </div>
+      )}
       {Object.keys(newHandsUpAlert).map(renderNewHandUpAlert)}
-      {renderAlert()}
     </Fragment>
   )
 }
