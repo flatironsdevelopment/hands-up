@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
 import { PositionProps } from './hooks'
@@ -33,5 +33,12 @@ export type ReactionProps = {
 }
 
 export const Reaction = ({ emoji, position }: ReactionProps) => {
-  return <ReactionEmoji {...position}>{emoji}</ReactionEmoji>
+  const [isExpired, setIsExpired] = useState(false)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsExpired(true), 5000)
+    return () => clearTimeout(timeout)
+  }, [])
+
+  return isExpired ? null : <ReactionEmoji {...position}>{emoji}</ReactionEmoji>
 }
