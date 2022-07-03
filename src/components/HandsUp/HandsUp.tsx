@@ -12,14 +12,10 @@ import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { makeStyles } from '@mui/styles'
 import { HandsUpList } from './HandsUpList'
-import {
-  getHandsUp,
-  setHandsUp,
-  authenticate,
-  listenDisconnect
-} from '../../firebase'
-import { MeetSnapshot, User } from 'types'
+import { getHandsUp, setHandsUp } from '../../firebase'
+import { MeetSnapshot } from '../../types'
 import { AlertState, useAlert } from '../Alert'
+import { useAuth } from '../../hooks'
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -73,48 +69,13 @@ export const HandsUp = ({ meetId }) => {
   const [isHandUp, setIsHandUp] = useState(false)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
 
-  const userRef = useRef<User>()
-
   const [state, setState] = useState<MeetSnapshot>({})
   const currentHandsState = useRef<MeetSnapshot>({})
 
   const isInitializedRef = useRef<boolean>(false)
-  const { showAlert, showMultipleAlerts } = useAlert()
 
-  const authSuccess = useCallback((user: User) => {
-    userRef.current = user
-    listenDisconnect(meetId, user)
-    showAlert({
-      severity: 'success',
-      message: `Welcome ${user.name}!`
-    })
-  }, [])
-
-  const authError = useCallback(() => {
-    userRef.current = null
-    showAlert({
-      severity: 'error',
-      message: 'Fail to authenticate.'
-    })
-  }, [])
-
-  const auth = useCallback(async () => {
-    if (userRef.current) return userRef.current
-
-    const user = await authenticate()
-
-    if (!user) {
-      authError()
-      return
-    }
-
-    if (user && !user.isConnected) {
-      setHandsUp(meetId, { ...user, isConnected: true })
-    }
-
-    authSuccess(user)
-    return user
-  }, [authSuccess, authError])
+  const { auth, userRef } = useAuth({ meetId })
+  const { showMultipleAlerts } = useAlert()
 
   const raiseHand = useCallback(async () => {
     let user = await auth()
