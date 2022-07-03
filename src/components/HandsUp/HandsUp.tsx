@@ -104,6 +104,7 @@ export const HandsUp = ({ meetId }) => {
       isInitializedRef.current = true
       auth()
     }
+    console.log('Listening to hands up')
     return getHandsUp(meetId, (hands) => handleNewHands(hands ? hands : {}))
   }, [meetId, handleNewHands])
 
