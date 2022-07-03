@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { makeStyles } from '@mui/styles'
-import { HandsUpList } from '../HandsUpList/HandsUpList'
+import { HandsUpList } from './HandsUpList'
 import {
   getHandsUp,
   setHandsUp,
