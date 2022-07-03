@@ -1,11 +1,12 @@
-import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar'
+import { SnackbarOrigin } from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import { useSnackbar, SnackbarProvider } from 'notistack'
 
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { nanoid } from 'nanoid'
 
 export type Alert = {
-  severity: 'success' | 'error'
+  severity: 'success' | 'error' | 'info'
   message: string
 }
 
@@ -15,6 +16,7 @@ export type AlertState = {
 
 export type AlertProvideValue = {
   showAlert?: (alert: Alert) => void
+  showMultipleAlerts?: (alertState: AlertState) => void
 }
 
 export type AlertProviderProps = React.PropsWithChildren<{}>
@@ -23,48 +25,43 @@ export const context = React.createContext<AlertProvideValue>({})
 
 const defaultAnchor: SnackbarOrigin = { vertical: 'top', horizontal: 'right' }
 
-export const AlertProvider = ({ children }: AlertProviderProps) => {
-  const [alertSate, setAlertState] = useState<AlertState>({})
+export const AlertProviderWithContext = ({ children }: AlertProviderProps) => {
+  const { enqueueSnackbar } = useSnackbar()
 
   const showAlert = useCallback((alert: Alert) => {
-    setAlertState((state) => ({ ...state, [nanoid()]: alert }))
+    enqueueSnackbar(alert.message, {
+      key: nanoid(),
+      variant: alert.severity,
+      anchorOrigin: defaultAnchor
+    })
   }, [])
 
-  const removeAlert = useCallback((key: string) => {
-    setAlertState((state) => {
-      const newState = { ...state }
-      delete newState[key]
-      return newState
+  const showMultipleAlerts = useCallback((alertState: AlertState) => {
+    Object.keys(alertState).forEach((key) => {
+      const alert = alertState[key]
+      enqueueSnackbar(alert.message, {
+        key: key,
+        variant: alert.severity,
+        anchorOrigin: defaultAnchor
+      })
     })
   }, [])
 
   const value = useMemo<AlertProvideValue>(
     () => ({
-      showAlert
+      showAlert,
+      showMultipleAlerts
     }),
     []
   )
 
-  function renderAlert(key: string) {
-    const alert = alertSate[key]
-    return (
-      <Snackbar
-        open={!!alert}
-        autoHideDuration={3000}
-        onClose={() => removeAlert(key)}
-        anchorOrigin={defaultAnchor}
-      >
-        <Alert onClose={() => removeAlert(key)} severity={alert.severity}>
-          {alert.message}
-        </Alert>
-      </Snackbar>
-    )
-  }
+  return <context.Provider value={value}>{children}</context.Provider>
+}
 
+export const AlertProvider = ({ children }: AlertProviderProps) => {
   return (
-    <context.Provider value={value}>
-      {Object.keys(alertSate).map(renderAlert)}
-      {children}
-    </context.Provider>
+    <SnackbarProvider maxSnack={10}>
+      <AlertProviderWithContext>{children}</AlertProviderWithContext>
+    </SnackbarProvider>
   )
 }
