@@ -13,7 +13,7 @@ const Container = styled.div`
   position: fixed;
   bottom: 120px;
   right: 50px;
-  z-index: 1000;
+  z-index: 999;
 `
 
 function App() {

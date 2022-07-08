@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
     position: 'fixed',
     bottom: 200,
     right: 30,
-    zIndex: 1000
+    zIndex: 999
   },
   backdrop: {
     position: 'fixed',

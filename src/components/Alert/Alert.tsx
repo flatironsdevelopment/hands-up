@@ -4,7 +4,6 @@ import { useSnackbar, SnackbarProvider } from 'notistack'
 import CloseIcon from '@mui/icons-material/Close'
 
 import React, { useCallback, useMemo } from 'react'
-import { nanoid } from 'nanoid'
 import { IconButton } from '@mui/material'
 
 export type Alert = {
@@ -30,20 +29,21 @@ const defaultAnchor: SnackbarOrigin = { vertical: 'top', horizontal: 'right' }
 export const AlertProviderWithContext = ({ children }: AlertProviderProps) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
+  const action = (snackbarKey) => (
+    <IconButton
+      aria-label='close'
+      onClick={() => closeSnackbar(snackbarKey)}
+      color='inherit'
+    >
+      <CloseIcon />
+    </IconButton>
+  )
+
   const showAlert = useCallback((alert: Alert) => {
     enqueueSnackbar(alert.message, {
-      key: nanoid(),
       variant: alert.severity,
       anchorOrigin: defaultAnchor,
-      action: (snackbarKey) => (
-        <IconButton
-          aria-label='close'
-          onClick={() => closeSnackbar(snackbarKey)}
-          color='inherit'
-        >
-          <CloseIcon />
-        </IconButton>
-      )
+      action: action
     })
   }, [])
 
@@ -51,9 +51,10 @@ export const AlertProviderWithContext = ({ children }: AlertProviderProps) => {
     Object.keys(alertState).forEach((key) => {
       const alert = alertState[key]
       enqueueSnackbar(alert.message, {
-        key: key,
         variant: alert.severity,
-        anchorOrigin: defaultAnchor
+        anchorOrigin: defaultAnchor,
+        preventDuplicate: true,
+        action: action
       })
     })
   }, [])

@@ -15,6 +15,7 @@ const Container = styled.div`
   height: 56px;
   margin-top: 15px;
   margin-right: 10px;
+  z-index: 1000;
 `
 
 const ExpandableContainer = styled.div<{ height: number; isOpen: boolean }>`

@@ -13,9 +13,5 @@ export function showHandsUp() {
   }
 
   const root = ReactDOM.createRoot(target)
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  )
+  root.render(<App />)
 }

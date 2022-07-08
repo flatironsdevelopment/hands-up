@@ -42,9 +42,9 @@ export const HandsUpList = ({ state = {} }: { state: MeetSnapshot }) => {
     )
   }
 
-  function renderHandsUp({ id, name, photo, isHandUp }: User) {
+  function renderHandsUp({ id, name, photo, isHandUp }: User, index) {
     return (
-      <ListItem button key={id}>
+      <ListItem button key={`${id}-${index}`}>
         <ListItemIcon>{renderAvatar({ name, photo })}</ListItemIcon>
         <ListItemText primary={name} />
         {isHandUp && <PanToolIcon />}

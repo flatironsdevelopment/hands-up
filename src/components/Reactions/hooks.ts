@@ -70,7 +70,15 @@ export const useReactions = ({ meetId }: { meetId: string }) => {
   const [reactions, setReactions] = useState<ReactionsSnapshot>({})
 
   const addReaction = useCallback(
-    (emoji: string) => addNewReaction(meetId, buildReaction(emoji)),
+    (emoji: string) => {
+      const qty = randomNumber(1, 30)
+      new Array(qty).fill(null).forEach((_, index) => {
+        setTimeout(
+          () => addNewReaction(meetId, buildReaction(emoji)),
+          index * 100
+        )
+      })
+    },
     [meetId]
   )
 
