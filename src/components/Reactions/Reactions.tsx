@@ -22,10 +22,10 @@ const Container = styled.div`
   pointer-events: none;
 `
 
-const ALLOWED_REACTIONS = ['😍', '🤯', '😂', '🥳', '💖', '👏']
-
 export const Reactions = ({ meetId }: Props) => {
-  const { reactions, addReaction } = useReactions({ meetId: meetId })
+  const { allowedReactions, reactions, addReaction } = useReactions({
+    meetId: meetId
+  })
 
   function renderReaction(key: string) {
     const reactionItem = reactions[key]
@@ -42,7 +42,7 @@ export const Reactions = ({ meetId }: Props) => {
     <>
       <Tooltip title='Reactions'>
         <ExpandableFab icon={<AddReactionIcon />}>
-          {ALLOWED_REACTIONS.map((reaction, index) => (
+          {allowedReactions.map((reaction, index) => (
             <Fab
               onClick={() => addReaction(reaction)}
               key={`btn-reaction-${index}`}

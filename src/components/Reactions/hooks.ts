@@ -5,7 +5,9 @@ import {
   onChildAdded,
   query,
   orderByChild,
-  startAfter
+  startAfter,
+  child,
+  get
 } from 'firebase/database'
 import { nanoid } from 'nanoid'
 import { useCallback, useEffect, useState } from 'react'
@@ -48,6 +50,7 @@ export const buildReaction = (emoji: string) =>
   } as ReactionItem)
 
 const collection = '/reactions'
+const allowedReactionsCollection = '/allowed-reactions'
 
 export function listenReactions(
   meetId: string,
@@ -61,13 +64,27 @@ export function listenReactions(
   onChildAdded(reactionsQuery, (data) => callback(data.val()))
 }
 
+export async function getAllowedReactions(): Promise<string[]> {
+  const dbRef = ref(db)
+  const snapshot = await get(child(dbRef, allowedReactionsCollection))
+  if (snapshot.exists()) {
+    return snapshot.val()
+  } else {
+    return []
+  }
+}
+
 export function addNewReaction(meetId: string, element: ReactionItem) {
   const reactions = ref(db, `${collection}/${meetId}`)
   set(push(reactions), element).then()
 }
 
+const ALLOWED_REACTIONS = ['😍', '🤯', '😂', '🥳', '💖', '👏', '😅', '💯']
+
 export const useReactions = ({ meetId }: { meetId: string }) => {
   const [reactions, setReactions] = useState<ReactionsSnapshot>({})
+  const [allowedReactions, setAllowedReactions] =
+    useState<string[]>(ALLOWED_REACTIONS)
 
   const addReaction = useCallback(
     (emoji: string) => {
@@ -89,5 +106,14 @@ export const useReactions = ({ meetId }: { meetId: string }) => {
     })
   }, [meetId])
 
-  return { reactions, addReaction }
+  useEffect(() => {
+    getAllowedReactions().then((allowedReactions) => {
+      console.log({ allowedReactions })
+      if (allowedReactions && allowedReactions.length > 0) {
+        setAllowedReactions(allowedReactions)
+      }
+    })
+  }, [])
+
+  return { allowedReactions, reactions, addReaction }
 }
