@@ -7,15 +7,18 @@ const floatAnimation = (p: PositionProps) => keyframes`
   0 {
     bottom: 0%;
     transform: translateX(0);
+    opacity: 1;
   }
 
   50% {
     transform: translateX(${p.firstPoint}px);
+    opacity: 0.5;
   }
 
   100% {
     transform: translateX(${p.secondPoint}px);
-    bottom: 110%;
+    bottom: 60%;
+    opacity: 0;
   }
 `
 const ReactionEmoji = styled.div<PositionProps>`
@@ -36,7 +39,7 @@ export const Reaction = ({ emoji, position }: ReactionProps) => {
   const [isExpired, setIsExpired] = useState(false)
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsExpired(true), 5000)
+    const timeout = setTimeout(() => setIsExpired(true), 4050)
     return () => clearTimeout(timeout)
   }, [])
 
