@@ -10,13 +10,9 @@ import PanToolIcon from '@mui/icons-material/PanTool'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 import { makeStyles } from '@mui/styles'
 import { MeetSnapshot, User } from 'types'
+import styled from '@emotion/styled'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: 360,
-    maxHeight: 500,
-    overflow: 'auto'
-  },
   list: {
     background: 'white'
   },
@@ -30,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
     flex: 1
   }
 }))
+
+const BaseCard = styled(Card)`
+  width: 360px;
+  max-height: 500px;
+  overflow-y: scroll !important;
+`
 
 export const HandsUpList = ({ state = {} }: { state: MeetSnapshot }) => {
   const style = useStyles()
@@ -78,15 +80,17 @@ export const HandsUpList = ({ state = {} }: { state: MeetSnapshot }) => {
   )
 
   return (
-    <Card className={style.root}>
+    <BaseCard>
       <List
         className={style.list}
         subheader={
-          <ListSubheader className={style.header}>Hands Up</ListSubheader>
+          <ListSubheader className={style.header}>
+            Hands Up ({mapped.length || 0})
+          </ListSubheader>
         }
       >
         {mapped.length === 0 ? renderEmptyState() : mapped.map(renderHandsUp)}
       </List>
-    </Card>
+    </BaseCard>
   )
 }
